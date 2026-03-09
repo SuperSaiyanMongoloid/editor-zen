@@ -275,7 +275,7 @@ const Index = () => {
               noteTitle={title}
               isSaved={isSaved}
               isSaving={isSaving}
-              onBack={() => console.log("Back")}
+              onBack={() => setIsMobileNotesOpen(true)}
               onOpenMetadata={() => console.log("Open metadata")}
               onOpenMore={() => console.log("Open more")}
             />
@@ -299,6 +299,18 @@ const Index = () => {
                 </ul>
               </EditorBody>
             </EditorContainer>
+
+            {/* Mobile Notes Sheet */}
+            <MobileNotesSheet
+              isOpen={isMobileNotesOpen}
+              onClose={() => setIsMobileNotesOpen(false)}
+              onNoteSelect={(id) => {
+                setSelectedNoteId(id);
+                console.log("Selected note:", id);
+              }}
+              onCreateNote={() => console.log("Create note")}
+              selectedNoteId={selectedNoteId}
+            />
           </div>
         </TabsContent>
 
