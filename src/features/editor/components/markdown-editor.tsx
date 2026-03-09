@@ -33,6 +33,8 @@ export function MarkdownEditor({
   initialContent = "",
   placeholder = "Start writing with markdown…",
   className,
+  onChange,
+  previewOnly = false,
 }: MarkdownEditorProps) {
   const [content, setContent] = useState(initialContent);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
