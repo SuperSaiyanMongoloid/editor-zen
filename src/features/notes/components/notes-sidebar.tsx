@@ -252,19 +252,27 @@ function QuickAccessItem({ icon, name, count, isActive, onClick }: QuickAccessIt
   return (
     <button
       className={cn(
-        "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm",
-        "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-        "hover:bg-sidebar-accent transition-colors duration-fast",
-        isActive && "bg-sidebar-accent text-sidebar-accent-foreground"
+        "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm group",
+        "text-sidebar-foreground/80",
+        "transition-all duration-150 ease-out",
+        "hover:text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-0.5 hover:shadow-xs",
+        "active:translate-x-0 active:shadow-none active:scale-[0.99]",
+        isActive && "bg-sidebar-accent text-sidebar-accent-foreground shadow-xs translate-x-0"
       )}
       onClick={onClick}
     >
       <span className="flex items-center gap-2">
-        <span className="text-muted-foreground">{icon}</span>
+        <span className={cn(
+          "text-muted-foreground transition-transform duration-150",
+          "group-hover:scale-110"
+        )}>{icon}</span>
         <span>{name}</span>
       </span>
       {count !== undefined && (
-        <span className="text-xs text-muted-foreground">{count}</span>
+        <span className={cn(
+          "text-xs text-muted-foreground transition-all duration-150",
+          "group-hover:text-sidebar-foreground"
+        )}>{count}</span>
       )}
     </button>
   );
