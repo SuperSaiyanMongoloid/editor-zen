@@ -148,12 +148,14 @@ function ToolbarButton({
           variant="ghost"
           size="icon"
           className={cn(
-            "w-8 h-8 rounded-md transition-all duration-fast",
-            "text-muted-foreground hover:text-foreground",
-            "hover:bg-secondary active:bg-secondary/80",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            "disabled:opacity-40 disabled:pointer-events-none",
-            isActive && "bg-secondary text-foreground"
+            "w-8 h-8 rounded-md",
+            "transition-all duration-150 ease-out",
+            "text-muted-foreground",
+            "hover:text-foreground hover:bg-secondary hover:scale-105 hover:shadow-sm",
+            "active:scale-95 active:shadow-none",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:scale-105",
+            "disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100",
+            isActive && "bg-secondary text-foreground shadow-xs hover:scale-100"
           )}
           onClick={onClick}
           disabled={disabled}
@@ -162,7 +164,11 @@ function ToolbarButton({
           {icon}
         </Button>
       </TooltipTrigger>
-      <TooltipContent side="bottom" className="flex items-center gap-2">
+      <TooltipContent 
+        side="bottom" 
+        className="flex items-center gap-2 animate-scale-in"
+        sideOffset={8}
+      >
         <span>{tooltip}</span>
         {shortcut && <kbd className="kbd">{shortcut}</kbd>}
       </TooltipContent>
