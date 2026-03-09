@@ -148,12 +148,14 @@ function ToolbarButton({
           variant="ghost"
           size="icon"
           className={cn(
-            "w-8 h-8 rounded-md transition-all duration-fast",
-            "text-muted-foreground hover:text-foreground",
-            "hover:bg-secondary active:bg-secondary/80",
-            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
-            "disabled:opacity-40 disabled:pointer-events-none",
-            isActive && "bg-secondary text-foreground"
+            "w-8 h-8 rounded-md",
+            "transition-all duration-150 ease-out",
+            "text-muted-foreground",
+            "hover:text-foreground hover:bg-secondary hover:scale-105 hover:shadow-sm",
+            "active:scale-95 active:shadow-none",
+            "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:scale-105",
+            "disabled:opacity-40 disabled:pointer-events-none disabled:hover:scale-100",
+            isActive && "bg-secondary text-foreground shadow-xs hover:scale-100"
           )}
           onClick={onClick}
           disabled={disabled}
@@ -162,7 +164,11 @@ function ToolbarButton({
           {icon}
         </Button>
       </TooltipTrigger>
-      <TooltipContent side="bottom" className="flex items-center gap-2">
+      <TooltipContent 
+        side="bottom" 
+        className="flex items-center gap-2 animate-scale-in"
+        sideOffset={8}
+      >
         <span>{tooltip}</span>
         {shortcut && <kbd className="kbd">{shortcut}</kbd>}
       </TooltipContent>
@@ -221,20 +227,24 @@ function EditorModeToggle({ mode, onToggle }: EditorModeToggleProps) {
         <TooltipTrigger asChild>
           <button
             className={cn(
-              "flex items-center justify-center w-7 h-6 rounded transition-all duration-fast",
+              "flex items-center justify-center w-7 h-6 rounded",
+              "transition-all duration-150 ease-out",
               "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               mode === "edit"
-                ? "bg-surface-elevated text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-surface-elevated text-foreground shadow-sm scale-100"
+                : "text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95"
             )}
             onClick={mode === "preview" ? onToggle : undefined}
             aria-label="Edit mode"
             aria-pressed={mode === "edit"}
           >
-            <Edit3 className="w-3.5 h-3.5" />
+            <Edit3 className={cn(
+              "w-3.5 h-3.5 transition-transform duration-150",
+              mode === "edit" && "scale-110"
+            )} />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
+        <TooltipContent side="bottom" className="animate-scale-in" sideOffset={8}>
           <span>Edit mode</span>
           <kbd className="kbd ml-2">⌘E</kbd>
         </TooltipContent>
@@ -244,20 +254,24 @@ function EditorModeToggle({ mode, onToggle }: EditorModeToggleProps) {
         <TooltipTrigger asChild>
           <button
             className={cn(
-              "flex items-center justify-center w-7 h-6 rounded transition-all duration-fast",
+              "flex items-center justify-center w-7 h-6 rounded",
+              "transition-all duration-150 ease-out",
               "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               mode === "preview"
-                ? "bg-surface-elevated text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-surface-elevated text-foreground shadow-sm scale-100"
+                : "text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95"
             )}
             onClick={mode === "edit" ? onToggle : undefined}
             aria-label="Preview mode"
             aria-pressed={mode === "preview"}
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className={cn(
+              "w-3.5 h-3.5 transition-transform duration-150",
+              mode === "preview" && "scale-110"
+            )} />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
+        <TooltipContent side="bottom" className="animate-scale-in" sideOffset={8}>
           <span>Preview mode</span>
           <kbd className="kbd ml-2">⌘P</kbd>
         </TooltipContent>

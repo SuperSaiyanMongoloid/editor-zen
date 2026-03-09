@@ -210,4 +210,62 @@
   .surface-sunken {
     @apply bg-surface-sunken;
   }
+  
+  /* Interactive button utilities */
+  .btn-interactive {
+    @apply transition-all duration-150 ease-out;
+    @apply hover:scale-[1.02] active:scale-[0.98];
+    @apply hover:shadow-sm active:shadow-none;
+  }
+  
+  .btn-toolbar {
+    @apply transition-all duration-150 ease-out;
+    @apply hover:scale-105 active:scale-95;
+    @apply hover:shadow-sm active:shadow-none;
+    @apply hover:bg-secondary/80;
+  }
+  
+  .btn-toolbar-active {
+    @apply bg-secondary text-foreground shadow-xs;
+    @apply hover:scale-100;
+  }
+  
+  /* Sidebar item interactions */
+  .sidebar-item {
+    @apply transition-all duration-150 ease-out;
+    @apply hover:translate-x-0.5;
+  }
+  
+  .sidebar-item-active {
+    @apply bg-sidebar-accent text-sidebar-accent-foreground;
+    @apply shadow-xs;
+  }
+  
+  /* Note card interactions */
+  .note-card {
+    @apply transition-all duration-150 ease-out;
+    @apply hover:bg-sidebar-accent/50 hover:shadow-xs;
+    @apply active:scale-[0.99];
+  }
+  
+  .note-card-selected {
+    @apply bg-sidebar-accent shadow-sm;
+    @apply ring-1 ring-accent/20;
+  }
+  
+  /* Icon button utility */
+  .icon-btn {
+    @apply transition-all duration-150 ease-out;
+    @apply hover:scale-110 active:scale-95;
+    @apply hover:text-foreground;
+  }
+  
+  /* Folder toggle animation */
+  .folder-chevron {
+    @apply transition-transform duration-200 ease-out;
+  }
+  
+  .folder-chevron-open {
+    @apply rotate-90;
+  }
 }

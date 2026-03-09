@@ -252,19 +252,27 @@ function QuickAccessItem({ icon, name, count, isActive, onClick }: QuickAccessIt
   return (
     <button
       className={cn(
-        "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm",
-        "text-sidebar-foreground/80 hover:text-sidebar-foreground",
-        "hover:bg-sidebar-accent transition-colors duration-fast",
-        isActive && "bg-sidebar-accent text-sidebar-accent-foreground"
+        "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm group",
+        "text-sidebar-foreground/80",
+        "transition-all duration-150 ease-out",
+        "hover:text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-0.5 hover:shadow-xs",
+        "active:translate-x-0 active:shadow-none active:scale-[0.99]",
+        isActive && "bg-sidebar-accent text-sidebar-accent-foreground shadow-xs translate-x-0"
       )}
       onClick={onClick}
     >
       <span className="flex items-center gap-2">
-        <span className="text-muted-foreground">{icon}</span>
+        <span className={cn(
+          "text-muted-foreground transition-transform duration-150",
+          "group-hover:scale-110"
+        )}>{icon}</span>
         <span>{name}</span>
       </span>
       {count !== undefined && (
-        <span className="text-xs text-muted-foreground">{count}</span>
+        <span className={cn(
+          "text-xs text-muted-foreground transition-all duration-150",
+          "group-hover:text-sidebar-foreground"
+        )}>{count}</span>
       )}
     </button>
   );
@@ -296,19 +304,29 @@ function FolderTree({
       <button
         className={cn(
           "w-full flex items-center gap-1 px-2 py-1.5 rounded-md text-sm group",
-          "text-sidebar-foreground hover:bg-sidebar-accent transition-colors duration-fast"
+          "text-sidebar-foreground",
+          "transition-all duration-150 ease-out",
+          "hover:bg-sidebar-accent hover:shadow-xs",
+          "active:scale-[0.99] active:shadow-none"
         )}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
         onClick={() => onToggleFolder(folder.id)}
       >
-        <span className="text-muted-foreground transition-transform duration-fast">
-          {hasChildren && (
-            isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />
-          )}
+        <span className={cn(
+          "text-muted-foreground transition-transform duration-200 ease-out",
+          isExpanded && "rotate-90"
+        )}>
+          {hasChildren && <ChevronRight className="w-3.5 h-3.5" />}
         </span>
-        <Folder className="w-4 h-4 text-muted-foreground" />
+        <Folder className={cn(
+          "w-4 h-4 text-muted-foreground transition-transform duration-150",
+          "group-hover:scale-110"
+        )} />
         <span className="flex-1 text-left truncate">{folder.name}</span>
-        <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className={cn(
+          "text-xs text-muted-foreground transition-all duration-150",
+          "opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0"
+        )}>
           {folder.notes.length + (folder.subfolders?.reduce((acc, sf) => acc + sf.notes.length, 0) || 0)}
         </span>
       </button>
@@ -357,22 +375,26 @@ function NoteItem({ note, isSelected, onClick, depth }: NoteItemProps) {
     <button
       className={cn(
         "w-full flex items-start gap-2 px-2 py-2 rounded-md text-left group",
-        "transition-colors duration-fast",
+        "transition-all duration-150 ease-out",
         isSelected 
-          ? "bg-sidebar-accent text-sidebar-accent-foreground" 
-          : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+          ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm ring-1 ring-accent/10" 
+          : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:shadow-xs hover:translate-x-0.5",
+        "active:scale-[0.99] active:shadow-none active:translate-x-0"
       )}
       style={{ paddingLeft: `${depth * 12 + 24}px` }}
       onClick={onClick}
     >
       <FileText className={cn(
-        "w-4 h-4 mt-0.5 flex-shrink-0",
-        isSelected ? "text-sidebar-accent-foreground" : "text-muted-foreground"
+        "w-4 h-4 mt-0.5 flex-shrink-0 transition-transform duration-150",
+        isSelected ? "text-sidebar-accent-foreground scale-110" : "text-muted-foreground group-hover:scale-110"
       )} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           {note.isPinned && (
-            <Star className="w-3 h-3 text-accent fill-accent flex-shrink-0" />
+            <Star className={cn(
+              "w-3 h-3 text-accent fill-accent flex-shrink-0",
+              "transition-transform duration-150 group-hover:scale-110"
+            )} />
           )}
           <span className={cn(
             "text-sm truncate",
@@ -392,8 +414,10 @@ function NoteItem({ note, isSelected, onClick, depth }: NoteItemProps) {
         variant="ghost"
         size="icon"
         className={cn(
-          "w-6 h-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity",
-          "text-muted-foreground hover:text-foreground"
+          "w-6 h-6 flex-shrink-0 transition-all duration-150",
+          "opacity-0 group-hover:opacity-100",
+          "text-muted-foreground hover:text-foreground",
+          "hover:scale-110 active:scale-95"
         )}
         onClick={(e) => {
           e.stopPropagation();
