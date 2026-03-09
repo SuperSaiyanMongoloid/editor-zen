@@ -103,6 +103,7 @@ const Index = () => {
           <TabsList className="h-9">
             <TabsTrigger value="desktop" className="text-sm px-4">Desktop</TabsTrigger>
             <TabsTrigger value="desktop-panel" className="text-sm px-4">Desktop + Panel</TabsTrigger>
+            <TabsTrigger value="drag-drop" className="text-sm px-4">Drag & Drop</TabsTrigger>
             <TabsTrigger value="sidebar-collapsed" className="text-sm px-4">Collapsed Sidebar</TabsTrigger>
             <TabsTrigger value="mobile" className="text-sm px-4">Mobile</TabsTrigger>
             <TabsTrigger value="empty" className="text-sm px-4">Empty State</TabsTrigger>
