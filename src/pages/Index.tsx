@@ -251,6 +251,49 @@ const Index = () => {
           </div>
         </TabsContent>
 
+        {/* Drag & Drop */}
+        <TabsContent value="drag-drop" className="mt-0">
+          <div className="flex h-[calc(100vh-65px)]">
+            <DraggableNotesList
+              selectedNoteId={selectedNoteId}
+              onNoteSelect={setSelectedNoteId}
+            />
+
+            <div className="flex-1 flex flex-col">
+              <EditorToolbar
+                noteTitle={title}
+                folderPath="Personal / Journal"
+                isSaved={isSaved}
+                isSaving={isSaving}
+                editorMode={editorMode}
+                isSidebarOpen={true}
+                isMetadataPanelOpen={false}
+                canNavigatePrev={true}
+                canNavigateNext={true}
+                onToggleEditorMode={() => setEditorMode(editorMode === "edit" ? "preview" : "edit")}
+              />
+              
+              <EditorContainer>
+                <EditorTitleInput value={title} onChange={setTitle} />
+                <EditorBody>
+                  <p className="mb-4">
+                    Drag notes between folders or reorder them within a folder. 
+                    Hover over a note to reveal the drag handle on the left.
+                  </p>
+                  <p className="mb-4">
+                    <strong>Try it:</strong>
+                  </p>
+                  <ul className="list-disc pl-6 mb-4 space-y-2">
+                    <li>Grab the ⠿ handle to drag a note</li>
+                    <li>Drop on a folder header to move it</li>
+                    <li>Drop between notes to reorder</li>
+                  </ul>
+                </EditorBody>
+              </EditorContainer>
+            </div>
+          </div>
+        </TabsContent>
+
         {/* Collapsed Sidebar */}
         <TabsContent value="sidebar-collapsed" className="mt-0">
           <div className="flex h-[calc(100vh-65px)]">
