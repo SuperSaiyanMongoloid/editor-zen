@@ -227,20 +227,24 @@ function EditorModeToggle({ mode, onToggle }: EditorModeToggleProps) {
         <TooltipTrigger asChild>
           <button
             className={cn(
-              "flex items-center justify-center w-7 h-6 rounded transition-all duration-fast",
+              "flex items-center justify-center w-7 h-6 rounded",
+              "transition-all duration-150 ease-out",
               "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               mode === "edit"
-                ? "bg-surface-elevated text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-surface-elevated text-foreground shadow-sm scale-100"
+                : "text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95"
             )}
             onClick={mode === "preview" ? onToggle : undefined}
             aria-label="Edit mode"
             aria-pressed={mode === "edit"}
           >
-            <Edit3 className="w-3.5 h-3.5" />
+            <Edit3 className={cn(
+              "w-3.5 h-3.5 transition-transform duration-150",
+              mode === "edit" && "scale-110"
+            )} />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
+        <TooltipContent side="bottom" className="animate-scale-in" sideOffset={8}>
           <span>Edit mode</span>
           <kbd className="kbd ml-2">⌘E</kbd>
         </TooltipContent>
@@ -250,20 +254,24 @@ function EditorModeToggle({ mode, onToggle }: EditorModeToggleProps) {
         <TooltipTrigger asChild>
           <button
             className={cn(
-              "flex items-center justify-center w-7 h-6 rounded transition-all duration-fast",
+              "flex items-center justify-center w-7 h-6 rounded",
+              "transition-all duration-150 ease-out",
               "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-1",
               mode === "preview"
-                ? "bg-surface-elevated text-foreground shadow-xs"
-                : "text-muted-foreground hover:text-foreground"
+                ? "bg-surface-elevated text-foreground shadow-sm scale-100"
+                : "text-muted-foreground hover:text-foreground hover:scale-105 active:scale-95"
             )}
             onClick={mode === "edit" ? onToggle : undefined}
             aria-label="Preview mode"
             aria-pressed={mode === "preview"}
           >
-            <Eye className="w-3.5 h-3.5" />
+            <Eye className={cn(
+              "w-3.5 h-3.5 transition-transform duration-150",
+              mode === "preview" && "scale-110"
+            )} />
           </button>
         </TooltipTrigger>
-        <TooltipContent side="bottom">
+        <TooltipContent side="bottom" className="animate-scale-in" sideOffset={8}>
           <span>Preview mode</span>
           <kbd className="kbd ml-2">⌘P</kbd>
         </TooltipContent>
