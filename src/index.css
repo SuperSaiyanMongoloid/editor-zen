@@ -280,3 +280,24 @@
     @apply rotate-90;
   }
 }
+
+/* Command Palette Styles */
+[cmdk-root] {
+  font-family: var(--font-sans);
+}
+
+[cmdk-group-heading] {
+  @apply text-micro px-3 py-2;
+}
+
+[cmdk-input] {
+  font-family: var(--font-sans);
+}
+
+[cmdk-item] {
+  @apply outline-none;
+}
+
+[cmdk-item][aria-selected="true"] {
+  @apply bg-accent/10;
+}

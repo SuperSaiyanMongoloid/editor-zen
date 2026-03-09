@@ -6,8 +6,10 @@ import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-h
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
 import { NotesSidebar } from "@/features/notes/components/notes-sidebar";
 import { MobileNotesSheet } from "@/features/notes/components/mobile-notes-sheet";
+import { CommandPalette, useCommandPalette } from "@/features/command-palette/components/command-palette";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Moon, Sun } from "lucide-react";
+import { toast } from "sonner";
 
 const Index = () => {
   const [hasNote, setHasNote] = useState(true);
@@ -21,6 +23,8 @@ const Index = () => {
   const [isDark, setIsDark] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState("3");
   const [isMobileNotesOpen, setIsMobileNotesOpen] = useState(false);
+  
+  const commandPalette = useCommandPalette();
 
   useEffect(() => {
     if (isDark) {
@@ -50,8 +54,47 @@ const Index = () => {
     }
   };
 
+  const handleCommandAction = (action: string, data?: unknown) => {
+    switch (action) {
+      case "create-note":
+        toast.success("Creating new note...");
+        break;
+      case "toggle-theme":
+        setIsDark(!isDark);
+        toast.success(isDark ? "Switched to light mode" : "Switched to dark mode");
+        break;
+      case "open-note":
+        const noteData = data as { noteId: string };
+        setSelectedNoteId(noteData.noteId);
+        toast.success("Opening note...");
+        break;
+      case "search-notes":
+        toast.info("Opening search...");
+        break;
+      case "view-starred":
+        toast.info("Viewing starred notes");
+        break;
+      case "view-recent":
+        toast.info("Viewing recent notes");
+        break;
+      case "open-settings":
+        toast.info("Opening settings...");
+        break;
+      default:
+        toast.info(`Action: ${action}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Global Command Palette */}
+      <CommandPalette
+        isOpen={commandPalette.isOpen}
+        onClose={commandPalette.close}
+        onAction={handleCommandAction}
+        isDark={isDark}
+      />
+
       <Tabs defaultValue="desktop" className="w-full">
         {/* View Switcher */}
         <div className="sticky top-0 z-50 flex items-center justify-center gap-4 py-4 px-6 bg-surface border-b border-border">
@@ -339,9 +382,9 @@ const Index = () => {
               />
               
               <EmptyEditorState
-                onCreateNote={() => console.log("Create note")}
-                onOpenSearch={() => console.log("Open search")}
-                onOpenCommandPalette={() => console.log("Open command palette")}
+                onCreateNote={() => handleCommandAction("create-note")}
+                onOpenSearch={() => handleCommandAction("search-notes")}
+                onOpenCommandPalette={commandPalette.open}
               />
             </div>
           </div>
