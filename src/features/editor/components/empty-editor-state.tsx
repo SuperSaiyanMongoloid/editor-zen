@@ -70,21 +70,28 @@ function QuickAction({ icon, label, shortcut, onClick }: QuickActionProps) {
     <button
       className={cn(
         "w-full flex items-center justify-between gap-3 px-4 py-3 rounded-lg",
-        "bg-surface hover:bg-secondary",
-        "text-sm text-foreground",
-        "transition-colors duration-fast",
+        "bg-surface text-sm text-foreground",
+        "transition-all duration-150 ease-out",
+        "hover:bg-secondary hover:shadow-sm hover:scale-[1.01] hover:-translate-y-0.5",
+        "active:scale-[0.99] active:translate-y-0 active:shadow-none",
         "focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2",
         "group"
       )}
       onClick={onClick}
     >
       <span className="flex items-center gap-3">
-        <span className="text-muted-foreground group-hover:text-foreground transition-colors">
+        <span className={cn(
+          "text-muted-foreground transition-all duration-150",
+          "group-hover:text-foreground group-hover:scale-110"
+        )}>
           {icon}
         </span>
         <span>{label}</span>
       </span>
-      <kbd className="kbd">{shortcut}</kbd>
+      <kbd className={cn(
+        "kbd transition-all duration-150",
+        "group-hover:bg-secondary group-hover:border-border"
+      )}>{shortcut}</kbd>
     </button>
   );
 }

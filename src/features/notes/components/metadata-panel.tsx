@@ -113,8 +113,10 @@ export function MetadataPanel({
                   key={tag}
                   variant="secondary"
                   className={cn(
-                    "cursor-pointer transition-colors duration-fast",
-                    "hover:bg-accent-muted hover:text-accent-foreground"
+                    "cursor-pointer",
+                    "transition-all duration-150 ease-out",
+                    "hover:bg-accent-muted hover:text-accent-foreground hover:scale-105 hover:shadow-xs",
+                    "active:scale-95"
                   )}
                   onClick={() => onTagClick?.(tag)}
                 >
@@ -124,8 +126,10 @@ export function MetadataPanel({
               <button
                 className={cn(
                   "inline-flex items-center px-2 py-0.5 rounded text-xs",
-                  "text-muted-foreground hover:text-foreground hover:bg-secondary",
-                  "transition-colors duration-fast"
+                  "text-muted-foreground",
+                  "transition-all duration-150 ease-out",
+                  "hover:text-foreground hover:bg-secondary hover:scale-105",
+                  "active:scale-95"
                 )}
                 aria-label="Add tag"
               >
