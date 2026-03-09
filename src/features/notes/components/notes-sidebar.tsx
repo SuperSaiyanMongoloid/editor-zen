@@ -101,6 +101,8 @@ export function NotesSidebar({
     new Set(folders.filter(f => f.isExpanded).map(f => f.id))
   );
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [typeaheadBuffer, setTypeaheadBuffer] = useState("");
+  const typeaheadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<number, HTMLElement>>(new Map());
 
@@ -158,9 +160,66 @@ export function NotesSidebar({
     }
   }, [focusedIndex]);
 
+  // Get item label for typeahead matching
+  const getItemLabel = useCallback((item: NavItem): string => {
+    if (item.type === 'note') return item.title;
+    return item.name;
+  }, []);
+
+  // Typeahead search handler
+  const handleTypeahead = useCallback((char: string) => {
+    // Clear existing timeout
+    if (typeaheadTimeoutRef.current) {
+      clearTimeout(typeaheadTimeoutRef.current);
+    }
+
+    // Add character to buffer
+    const newBuffer = typeaheadBuffer + char.toLowerCase();
+    setTypeaheadBuffer(newBuffer);
+
+    // Find matching item starting from current position
+    const startIndex = focusedIndex >= 0 ? focusedIndex : 0;
+    
+    // Search from current position to end, then wrap to beginning
+    for (let offset = 0; offset < navItems.length; offset++) {
+      const index = (startIndex + offset) % navItems.length;
+      const item = navItems[index];
+      const label = getItemLabel(item).toLowerCase();
+      
+      // Skip current item for single char (allows cycling through same-letter items)
+      if (offset === 0 && newBuffer.length === 1 && focusedIndex >= 0) continue;
+      
+      if (label.startsWith(newBuffer)) {
+        setFocusedIndex(index);
+        break;
+      }
+    }
+
+    // Clear buffer after 800ms of no typing
+    typeaheadTimeoutRef.current = setTimeout(() => {
+      setTypeaheadBuffer("");
+    }, 800);
+  }, [typeaheadBuffer, focusedIndex, navItems, getItemLabel]);
+
+  // Cleanup timeout on unmount
+  useEffect(() => {
+    return () => {
+      if (typeaheadTimeoutRef.current) {
+        clearTimeout(typeaheadTimeoutRef.current);
+      }
+    };
+  }, []);
+
   // Keyboard navigation handler
   const handleKeyDown = useCallback((e: React.KeyboardEvent) => {
     if (navItems.length === 0) return;
+
+    // Handle typeahead for printable characters
+    if (e.key.length === 1 && !e.ctrlKey && !e.metaKey && !e.altKey) {
+      e.preventDefault();
+      handleTypeahead(e.key);
+      return;
+    }
 
     switch (e.key) {
       case 'ArrowDown':
@@ -168,12 +227,14 @@ export function NotesSidebar({
         setFocusedIndex(prev => 
           prev < navItems.length - 1 ? prev + 1 : 0
         );
+        setTypeaheadBuffer(""); // Clear buffer on arrow navigation
         break;
       case 'ArrowUp':
         e.preventDefault();
         setFocusedIndex(prev => 
           prev > 0 ? prev - 1 : navItems.length - 1
         );
+        setTypeaheadBuffer("");
         break;
       case 'Enter':
       case ' ':
@@ -208,18 +269,26 @@ export function NotesSidebar({
       case 'Home':
         e.preventDefault();
         setFocusedIndex(0);
+        setTypeaheadBuffer("");
         break;
       case 'End':
         e.preventDefault();
         setFocusedIndex(navItems.length - 1);
+        setTypeaheadBuffer("");
         break;
       case 'Escape':
         e.preventDefault();
         setFocusedIndex(-1);
+        setTypeaheadBuffer("");
         containerRef.current?.blur();
         break;
+      case 'Backspace':
+        // Allow clearing typeahead buffer
+        e.preventDefault();
+        setTypeaheadBuffer(prev => prev.slice(0, -1));
+        break;
     }
-  }, [navItems, focusedIndex, expandedFolders, onNoteSelect, toggleFolder]);
+  }, [navItems, focusedIndex, expandedFolders, onNoteSelect, toggleFolder, handleTypeahead]);
 
   // Register item ref
   const registerRef = useCallback((index: number, element: HTMLElement | null) => {
@@ -392,7 +461,16 @@ export function NotesSidebar({
       {/* Footer */}
       <footer className="border-t border-border p-2">
         <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
-          <span>24 notes</span>
+          {typeaheadBuffer ? (
+            <span className="flex items-center gap-1.5 text-accent animate-fade-in">
+              <span className="font-mono bg-accent/10 px-1.5 py-0.5 rounded">
+                {typeaheadBuffer}
+              </span>
+              <span className="text-muted-foreground">searching...</span>
+            </span>
+          ) : (
+            <span>24 notes</span>
+          )}
           <span className="flex items-center gap-1.5">
             <kbd className="kbd text-[10px] px-1">↑↓</kbd>
             <span>navigate</span>
