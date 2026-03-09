@@ -109,6 +109,7 @@ const Index = () => {
             <TabsTrigger value="drag-drop" className="text-sm px-4">Drag & Drop</TabsTrigger>
             <TabsTrigger value="sidebar-collapsed" className="text-sm px-4">Collapsed Sidebar</TabsTrigger>
             <TabsTrigger value="mobile" className="text-sm px-4">Mobile</TabsTrigger>
+            <TabsTrigger value="split-view" className="text-sm px-4">Split View</TabsTrigger>
             <TabsTrigger value="empty" className="text-sm px-4">Empty State</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2 ml-4">
