@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { EditorToolbar } from "@/features/editor/components/editor-toolbar";
 import { EditorContainer, EditorTitleInput, EditorBody } from "@/features/editor/components/editor-container";
+import { MarkdownEditor } from "@/features/editor/components/markdown-editor";
 import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-header";
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
@@ -159,30 +160,26 @@ const Index = () => {
                   value={title} 
                   onChange={setTitle}
                 />
-                <EditorBody>
-                  <p className="mb-4">
-                    The first quarter has been a period of significant learning. Looking back at my original goals, 
-                    I can see both where I've made progress and where adjustments are needed.
-                  </p>
-                  <p className="mb-4">
-                    <strong>Key observations:</strong>
-                  </p>
-                  <ul className="list-disc pl-6 mb-4 space-y-2">
-                    <li>Morning routines have been consistently maintained</li>
-                    <li>Deep work sessions averaging 3.5 hours per day</li>
-                    <li>Reading goal is slightly behind schedule</li>
-                    <li>Exercise consistency improved significantly</li>
-                  </ul>
-                  <p className="mb-4">
-                    The shift to time-blocking has been particularly effective. I'm finding that 
-                    protecting the first two hours of the day for creative work has compounded benefits 
-                    that extend throughout the rest of the day.
-                  </p>
-                  <p>
-                    For Q2, I want to focus on reducing context-switching and being more intentional 
-                    about saying no to commitments that don't align with my core priorities.
-                  </p>
-                </EditorBody>
+                <MarkdownEditor
+                  initialContent={`The first quarter has been a period of significant learning. Looking back at my original goals, I can see both where I've made progress and where adjustments are needed.
+
+**Key observations:**
+
+- Morning routines have been consistently maintained
+- Deep work sessions averaging **3.5 hours** per day
+- Reading goal is *slightly* behind schedule
+- Exercise consistency improved ~~dramatically~~ significantly
+
+The shift to \`time-blocking\` has been particularly effective. I'm finding that protecting the first two hours of the day for creative work has compounded benefits.
+
+> For Q2, I want to focus on reducing context-switching and being more intentional about saying no to commitments that don't align with my core priorities.
+
+### Next Steps
+
+1. Review [quarterly goals](https://example.com) weekly
+2. Reduce meetings to 3 per week
+3. Start a - [x] daily reflection habit`}
+                />
               </EditorContainer>
             </div>
           </div>
