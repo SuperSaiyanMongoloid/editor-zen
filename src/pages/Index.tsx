@@ -20,6 +20,7 @@ const Index = () => {
   const [isSaved, setIsSaved] = useState(true);
   const [isDark, setIsDark] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState("3");
+  const [isMobileNotesOpen, setIsMobileNotesOpen] = useState(false);
 
   useEffect(() => {
     if (isDark) {
