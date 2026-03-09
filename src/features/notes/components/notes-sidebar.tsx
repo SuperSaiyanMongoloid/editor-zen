@@ -304,19 +304,29 @@ function FolderTree({
       <button
         className={cn(
           "w-full flex items-center gap-1 px-2 py-1.5 rounded-md text-sm group",
-          "text-sidebar-foreground hover:bg-sidebar-accent transition-colors duration-fast"
+          "text-sidebar-foreground",
+          "transition-all duration-150 ease-out",
+          "hover:bg-sidebar-accent hover:shadow-xs",
+          "active:scale-[0.99] active:shadow-none"
         )}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
         onClick={() => onToggleFolder(folder.id)}
       >
-        <span className="text-muted-foreground transition-transform duration-fast">
-          {hasChildren && (
-            isExpanded ? <ChevronDown className="w-3.5 h-3.5" /> : <ChevronRight className="w-3.5 h-3.5" />
-          )}
+        <span className={cn(
+          "text-muted-foreground transition-transform duration-200 ease-out",
+          isExpanded && "rotate-90"
+        )}>
+          {hasChildren && <ChevronRight className="w-3.5 h-3.5" />}
         </span>
-        <Folder className="w-4 h-4 text-muted-foreground" />
+        <Folder className={cn(
+          "w-4 h-4 text-muted-foreground transition-transform duration-150",
+          "group-hover:scale-110"
+        )} />
         <span className="flex-1 text-left truncate">{folder.name}</span>
-        <span className="text-xs text-muted-foreground opacity-0 group-hover:opacity-100 transition-opacity">
+        <span className={cn(
+          "text-xs text-muted-foreground transition-all duration-150",
+          "opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0"
+        )}>
           {folder.notes.length + (folder.subfolders?.reduce((acc, sf) => acc + sf.notes.length, 0) || 0)}
         </span>
       </button>
