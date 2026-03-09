@@ -51,7 +51,8 @@ export function MarkdownEditor({
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
-  }, []);
+    onChange?.(e.target.value);
+  }, [onChange]);
 
   // Apply markdown formatting around selection
   const applyFormat = useCallback((action: FormatAction) => {
