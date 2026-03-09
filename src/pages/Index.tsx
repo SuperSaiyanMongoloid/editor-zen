@@ -1,10 +1,11 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { EditorToolbar } from "@/features/editor/components/editor-toolbar";
 import { EditorContainer, EditorTitleInput, EditorBody } from "@/features/editor/components/editor-container";
 import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-header";
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Moon, Sun } from "lucide-react";
 
 const Index = () => {
   const [hasNote, setHasNote] = useState(true);
@@ -14,6 +15,15 @@ const Index = () => {
   const [title, setTitle] = useState("Reflections on Q1 progress and adjustments");
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
+  const [isDark, setIsDark] = useState(false);
+
+  useEffect(() => {
+    if (isDark) {
+      document.documentElement.classList.add("dark");
+    } else {
+      document.documentElement.classList.remove("dark");
+    }
+  }, [isDark]);
 
   const simulateSave = () => {
     setIsSaved(false);
@@ -38,14 +48,22 @@ const Index = () => {
           </TabsList>
           <div className="flex items-center gap-2 ml-4">
             <button 
+              onClick={() => setIsDark(!isDark)}
+              className="flex items-center gap-1.5 text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded bg-surface-sunken border border-border transition-colors"
+              aria-label="Toggle dark mode"
+            >
+              {isDark ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              {isDark ? "Light" : "Dark"}
+            </button>
+            <button 
               onClick={simulateSave}
-              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-surface-sunken"
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded bg-surface-sunken border border-border transition-colors"
             >
               Simulate save
             </button>
             <button 
               onClick={() => setHasNote(!hasNote)}
-              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1 rounded bg-surface-sunken"
+              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded bg-surface-sunken border border-border transition-colors"
             >
               Toggle note
             </button>
