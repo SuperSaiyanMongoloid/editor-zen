@@ -4,18 +4,21 @@ import { EditorContainer, EditorTitleInput, EditorBody } from "@/features/editor
 import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-header";
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
+import { NotesSidebar } from "@/features/notes/components/notes-sidebar";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Moon, Sun } from "lucide-react";
 
 const Index = () => {
   const [hasNote, setHasNote] = useState(true);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
+  const [isSidebarCollapsed, setIsSidebarCollapsed] = useState(false);
   const [isMetadataPanelOpen, setIsMetadataPanelOpen] = useState(true);
   const [editorMode, setEditorMode] = useState<"edit" | "preview">("edit");
   const [title, setTitle] = useState("Reflections on Q1 progress and adjustments");
   const [isSaving, setIsSaving] = useState(false);
   const [isSaved, setIsSaved] = useState(true);
   const [isDark, setIsDark] = useState(false);
+  const [selectedNoteId, setSelectedNoteId] = useState("3");
 
   useEffect(() => {
     if (isDark) {
@@ -34,6 +37,17 @@ const Index = () => {
     }, 1500);
   };
 
+  const toggleSidebar = () => {
+    if (isSidebarOpen && !isSidebarCollapsed) {
+      setIsSidebarCollapsed(true);
+    } else if (isSidebarCollapsed) {
+      setIsSidebarOpen(false);
+      setIsSidebarCollapsed(false);
+    } else {
+      setIsSidebarOpen(true);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
       <Tabs defaultValue="desktop" className="w-full">
@@ -43,6 +57,7 @@ const Index = () => {
           <TabsList className="h-9">
             <TabsTrigger value="desktop" className="text-sm px-4">Desktop</TabsTrigger>
             <TabsTrigger value="desktop-panel" className="text-sm px-4">Desktop + Panel</TabsTrigger>
+            <TabsTrigger value="sidebar-collapsed" className="text-sm px-4">Collapsed Sidebar</TabsTrigger>
             <TabsTrigger value="mobile" className="text-sm px-4">Mobile</TabsTrigger>
             <TabsTrigger value="empty" className="text-sm px-4">Empty State</TabsTrigger>
           </TabsList>
@@ -61,34 +76,19 @@ const Index = () => {
             >
               Simulate save
             </button>
-            <button 
-              onClick={() => setHasNote(!hasNote)}
-              className="text-xs text-muted-foreground hover:text-foreground px-2 py-1.5 rounded bg-surface-sunken border border-border transition-colors"
-            >
-              Toggle note
-            </button>
           </div>
         </div>
 
         {/* Desktop Default */}
         <TabsContent value="desktop" className="mt-0">
           <div className="flex h-[calc(100vh-65px)]">
-            {/* Sidebar placeholder */}
-            {isSidebarOpen && (
-              <aside className="w-64 border-r border-border bg-sidebar p-4 hidden lg:block">
-                <div className="text-micro mb-4">Notes</div>
-                <div className="space-y-1">
-                  {["Morning thoughts", "Project ideas", "Weekly review", "Reflections on Q1..."].map((note, i) => (
-                    <div 
-                      key={note} 
-                      className={`px-3 py-2 rounded-md text-sm cursor-pointer transition-colors ${i === 3 ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground hover:bg-sidebar-accent/50'}`}
-                    >
-                      {note}
-                    </div>
-                  ))}
-                </div>
-              </aside>
-            )}
+            {/* Full Sidebar */}
+            <NotesSidebar 
+              selectedNoteId={selectedNoteId}
+              onNoteSelect={setSelectedNoteId}
+              onCreateNote={() => console.log("Create note")}
+              onSearch={(q) => console.log("Search:", q)}
+            />
 
             {/* Main editor area */}
             <div className="flex-1 flex flex-col">
@@ -144,22 +144,13 @@ const Index = () => {
         {/* Desktop with Metadata Panel */}
         <TabsContent value="desktop-panel" className="mt-0">
           <div className="flex h-[calc(100vh-65px)]">
-            {/* Sidebar placeholder */}
-            {isSidebarOpen && (
-              <aside className="w-64 border-r border-border bg-sidebar p-4 hidden lg:block">
-                <div className="text-micro mb-4">Notes</div>
-                <div className="space-y-1">
-                  {["Morning thoughts", "Project ideas", "Weekly review", "Reflections on Q1..."].map((note, i) => (
-                    <div 
-                      key={note} 
-                      className={`px-3 py-2 rounded-md text-sm cursor-pointer transition-colors ${i === 3 ? 'bg-sidebar-accent text-sidebar-accent-foreground' : 'text-sidebar-foreground hover:bg-sidebar-accent/50'}`}
-                    >
-                      {note}
-                    </div>
-                  ))}
-                </div>
-              </aside>
-            )}
+            {/* Full Sidebar */}
+            <NotesSidebar 
+              selectedNoteId={selectedNoteId}
+              onNoteSelect={setSelectedNoteId}
+              onCreateNote={() => console.log("Create note")}
+              onSearch={(q) => console.log("Search:", q)}
+            />
 
             {/* Main editor area */}
             <div className="flex-1 flex flex-col">
@@ -213,6 +204,68 @@ const Index = () => {
           </div>
         </TabsContent>
 
+        {/* Collapsed Sidebar */}
+        <TabsContent value="sidebar-collapsed" className="mt-0">
+          <div className="flex h-[calc(100vh-65px)]">
+            {/* Collapsed Sidebar */}
+            <NotesSidebar 
+              selectedNoteId={selectedNoteId}
+              onNoteSelect={setSelectedNoteId}
+              onCreateNote={() => console.log("Create note")}
+              isCollapsed={true}
+            />
+
+            {/* Main editor area */}
+            <div className="flex-1 flex flex-col">
+              <EditorToolbar
+                noteTitle={title}
+                folderPath="Personal / Journal"
+                isSaved={isSaved}
+                isSaving={isSaving}
+                editorMode={editorMode}
+                isSidebarOpen={false}
+                isMetadataPanelOpen={false}
+                canNavigatePrev={true}
+                canNavigateNext={true}
+                onToggleSidebar={() => setIsSidebarCollapsed(!isSidebarCollapsed)}
+                onToggleMetadataPanel={() => setIsMetadataPanelOpen(!isMetadataPanelOpen)}
+                onToggleEditorMode={() => setEditorMode(editorMode === "edit" ? "preview" : "edit")}
+              />
+              
+              <EditorContainer>
+                <EditorTitleInput 
+                  value={title} 
+                  onChange={setTitle}
+                />
+                <EditorBody>
+                  <p className="mb-4">
+                    The first quarter has been a period of significant learning. Looking back at my original goals, 
+                    I can see both where I've made progress and where adjustments are needed.
+                  </p>
+                  <p className="mb-4">
+                    <strong>Key observations:</strong>
+                  </p>
+                  <ul className="list-disc pl-6 mb-4 space-y-2">
+                    <li>Morning routines have been consistently maintained</li>
+                    <li>Deep work sessions averaging 3.5 hours per day</li>
+                    <li>Reading goal is slightly behind schedule</li>
+                    <li>Exercise consistency improved significantly</li>
+                  </ul>
+                  <p className="mb-4">
+                    The shift to time-blocking has been particularly effective. I'm finding that 
+                    protecting the first two hours of the day for creative work has compounded benefits 
+                    that extend throughout the rest of the day.
+                  </p>
+                  <p>
+                    For Q2, I want to focus on reducing context-switching and being more intentional 
+                    about saying no to commitments that don't align with my core priorities.
+                  </p>
+                </EditorBody>
+              </EditorContainer>
+            </div>
+          </div>
+        </TabsContent>
+
         {/* Mobile */}
         <TabsContent value="mobile" className="mt-0">
           <div className="max-w-[390px] mx-auto border-x border-border h-[calc(100vh-65px)] flex flex-col bg-background">
@@ -250,13 +303,13 @@ const Index = () => {
         {/* Empty State */}
         <TabsContent value="empty" className="mt-0">
           <div className="flex h-[calc(100vh-65px)]">
-            {/* Sidebar placeholder */}
-            <aside className="w-64 border-r border-border bg-sidebar p-4 hidden lg:block">
-              <div className="text-micro mb-4">Notes</div>
-              <div className="space-y-1 text-sm text-muted-foreground">
-                <p className="px-3 py-2">No notes yet</p>
-              </div>
-            </aside>
+            {/* Sidebar with no notes */}
+            <NotesSidebar 
+              folders={[]}
+              selectedNoteId={undefined}
+              onCreateNote={() => console.log("Create note")}
+              onSearch={(q) => console.log("Search:", q)}
+            />
 
             {/* Empty state */}
             <div className="flex-1 flex flex-col">
