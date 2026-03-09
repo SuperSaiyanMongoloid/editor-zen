@@ -101,6 +101,8 @@ export function NotesSidebar({
     new Set(folders.filter(f => f.isExpanded).map(f => f.id))
   );
   const [focusedIndex, setFocusedIndex] = useState<number>(-1);
+  const [typeaheadBuffer, setTypeaheadBuffer] = useState("");
+  const typeaheadTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const itemRefs = useRef<Map<number, HTMLElement>>(new Map());
 
