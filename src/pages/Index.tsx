@@ -5,6 +5,7 @@ import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-header";
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
 import { NotesSidebar } from "@/features/notes/components/notes-sidebar";
+import { MobileNotesSheet } from "@/features/notes/components/mobile-notes-sheet";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Moon, Sun } from "lucide-react";
 
@@ -19,6 +20,7 @@ const Index = () => {
   const [isSaved, setIsSaved] = useState(true);
   const [isDark, setIsDark] = useState(false);
   const [selectedNoteId, setSelectedNoteId] = useState("3");
+  const [isMobileNotesOpen, setIsMobileNotesOpen] = useState(false);
 
   useEffect(() => {
     if (isDark) {
@@ -273,7 +275,7 @@ const Index = () => {
               noteTitle={title}
               isSaved={isSaved}
               isSaving={isSaving}
-              onBack={() => console.log("Back")}
+              onBack={() => setIsMobileNotesOpen(true)}
               onOpenMetadata={() => console.log("Open metadata")}
               onOpenMore={() => console.log("Open more")}
             />
@@ -297,6 +299,18 @@ const Index = () => {
                 </ul>
               </EditorBody>
             </EditorContainer>
+
+            {/* Mobile Notes Sheet */}
+            <MobileNotesSheet
+              isOpen={isMobileNotesOpen}
+              onClose={() => setIsMobileNotesOpen(false)}
+              onNoteSelect={(id) => {
+                setSelectedNoteId(id);
+                console.log("Selected note:", id);
+              }}
+              onCreateNote={() => console.log("Create note")}
+              selectedNoteId={selectedNoteId}
+            />
           </div>
         </TabsContent>
 
