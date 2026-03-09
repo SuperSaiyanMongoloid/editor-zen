@@ -179,10 +179,10 @@ function SaveStateIndicator({ isSaved, isSaving }: SaveStateIndicatorProps) {
   if (isSaving) {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center gap-1 text-muted-foreground animate-pulse-subtle">
+        <TooltipTrigger>
+          <span className="flex items-center gap-1 text-muted-foreground animate-pulse-subtle cursor-default">
             <Cloud className="w-3 h-3" />
-          </div>
+          </span>
         </TooltipTrigger>
         <TooltipContent side="bottom">
           <span>Saving...</span>
@@ -194,10 +194,10 @@ function SaveStateIndicator({ isSaved, isSaving }: SaveStateIndicatorProps) {
   if (!isSaved) {
     return (
       <Tooltip>
-        <TooltipTrigger asChild>
-          <div className="flex items-center gap-1 text-accent">
+        <TooltipTrigger>
+          <span className="flex items-center gap-1 text-accent cursor-default">
             <CloudOff className="w-3 h-3" />
-          </div>
+          </span>
         </TooltipTrigger>
         <TooltipContent side="bottom">
           <span>Unsaved changes</span>
@@ -206,7 +206,7 @@ function SaveStateIndicator({ isSaved, isSaving }: SaveStateIndicatorProps) {
     );
   }
 
-  return null; // Saved state is the default, no indicator needed
+  return null;
 }
 
 interface EditorModeToggleProps {
