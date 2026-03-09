@@ -382,9 +382,9 @@ const Index = () => {
               />
               
               <EmptyEditorState
-                onCreateNote={() => console.log("Create note")}
-                onOpenSearch={() => console.log("Open search")}
-                onOpenCommandPalette={() => console.log("Open command palette")}
+                onCreateNote={() => handleCommandAction("create-note")}
+                onOpenSearch={() => handleCommandAction("search-notes")}
+                onOpenCommandPalette={commandPalette.open}
               />
             </div>
           </div>
