@@ -451,7 +451,7 @@ const QuickAccessItem = React.forwardRef<HTMLButtonElement, QuickAccessItemProps
 );
 QuickAccessItem.displayName = "QuickAccessItem";
 
-import React from "react";
+
 
 interface FolderTreeProps {
   folder: FolderItem;
