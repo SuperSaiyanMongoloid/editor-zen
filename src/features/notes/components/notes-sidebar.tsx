@@ -375,22 +375,26 @@ function NoteItem({ note, isSelected, onClick, depth }: NoteItemProps) {
     <button
       className={cn(
         "w-full flex items-start gap-2 px-2 py-2 rounded-md text-left group",
-        "transition-colors duration-fast",
+        "transition-all duration-150 ease-out",
         isSelected 
-          ? "bg-sidebar-accent text-sidebar-accent-foreground" 
-          : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground"
+          ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm ring-1 ring-accent/10" 
+          : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:shadow-xs hover:translate-x-0.5",
+        "active:scale-[0.99] active:shadow-none active:translate-x-0"
       )}
       style={{ paddingLeft: `${depth * 12 + 24}px` }}
       onClick={onClick}
     >
       <FileText className={cn(
-        "w-4 h-4 mt-0.5 flex-shrink-0",
-        isSelected ? "text-sidebar-accent-foreground" : "text-muted-foreground"
+        "w-4 h-4 mt-0.5 flex-shrink-0 transition-transform duration-150",
+        isSelected ? "text-sidebar-accent-foreground scale-110" : "text-muted-foreground group-hover:scale-110"
       )} />
       <div className="flex-1 min-w-0">
         <div className="flex items-center gap-1.5">
           {note.isPinned && (
-            <Star className="w-3 h-3 text-accent fill-accent flex-shrink-0" />
+            <Star className={cn(
+              "w-3 h-3 text-accent fill-accent flex-shrink-0",
+              "transition-transform duration-150 group-hover:scale-110"
+            )} />
           )}
           <span className={cn(
             "text-sm truncate",
@@ -410,8 +414,10 @@ function NoteItem({ note, isSelected, onClick, depth }: NoteItemProps) {
         variant="ghost"
         size="icon"
         className={cn(
-          "w-6 h-6 flex-shrink-0 opacity-0 group-hover:opacity-100 transition-opacity",
-          "text-muted-foreground hover:text-foreground"
+          "w-6 h-6 flex-shrink-0 transition-all duration-150",
+          "opacity-0 group-hover:opacity-100",
+          "text-muted-foreground hover:text-foreground",
+          "hover:scale-110 active:scale-95"
         )}
         onClick={(e) => {
           e.stopPropagation();
