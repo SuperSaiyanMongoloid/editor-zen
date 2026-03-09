@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback, useEffect, useMemo } from "react";
+import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { 
   Search, 
   Plus, 
@@ -451,7 +451,7 @@ const QuickAccessItem = React.forwardRef<HTMLButtonElement, QuickAccessItemProps
 );
 QuickAccessItem.displayName = "QuickAccessItem";
 
-import React from "react";
+
 
 interface FolderTreeProps {
   folder: FolderItem;
