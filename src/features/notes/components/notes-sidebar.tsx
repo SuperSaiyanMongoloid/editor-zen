@@ -461,7 +461,16 @@ export function NotesSidebar({
       {/* Footer */}
       <footer className="border-t border-border p-2">
         <div className="flex items-center justify-between text-xs text-muted-foreground px-2">
-          <span>24 notes</span>
+          {typeaheadBuffer ? (
+            <span className="flex items-center gap-1.5 text-accent animate-fade-in">
+              <span className="font-mono bg-accent/10 px-1.5 py-0.5 rounded">
+                {typeaheadBuffer}
+              </span>
+              <span className="text-muted-foreground">searching...</span>
+            </span>
+          ) : (
+            <span>24 notes</span>
+          )}
           <span className="flex items-center gap-1.5">
             <kbd className="kbd text-[10px] px-1">↑↓</kbd>
             <span>navigate</span>
