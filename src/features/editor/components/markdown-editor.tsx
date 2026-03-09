@@ -1,5 +1,6 @@
 import { useState, useRef, useCallback, useEffect } from "react";
 import { cn } from "@/lib/utils";
+import { toast } from "sonner";
 
 interface MarkdownEditorProps {
   initialContent?: string;
@@ -7,10 +8,23 @@ interface MarkdownEditorProps {
   className?: string;
 }
 
+type FormatAction = {
+  wrap: [string, string];
+  label: string;
+};
+
+const FORMAT_ACTIONS: Record<string, FormatAction> = {
+  b: { wrap: ["**", "**"], label: "Bold" },
+  i: { wrap: ["*", "*"], label: "Italic" },
+  e: { wrap: ["`", "`"], label: "Code" },
+  d: { wrap: ["~~", "~~"], label: "Strikethrough" },
+  k: { wrap: ["[", "](url)"], label: "Link" },
+};
+
 /**
- * Inline markdown editor that renders formatting as you type.
- * Supports: **bold**, *italic*, `code`, ~~strikethrough~~, [links](url),
- * headings (#), lists (- / 1.), blockquotes (>), and horizontal rules (---)
+ * Inline markdown editor with keyboard shortcuts for formatting.
+ * Ctrl/⌘+B (bold), Ctrl/⌘+I (italic), Ctrl/⌘+E (code),
+ * Ctrl/⌘+D (strikethrough), Ctrl/⌘+K (link)
  */
 export function MarkdownEditor({
   initialContent = "",
@@ -34,6 +48,62 @@ export function MarkdownEditor({
     setContent(e.target.value);
   }, []);
 
+  // Apply markdown formatting around selection
+  const applyFormat = useCallback((action: FormatAction) => {
+    const el = textareaRef.current;
+    if (!el) return;
+
+    const start = el.selectionStart;
+    const end = el.selectionEnd;
+    const selected = content.slice(start, end);
+    const [before, after] = action.wrap;
+
+    // Check if already wrapped — toggle off
+    const preBefore = content.slice(Math.max(0, start - before.length), start);
+    const postAfter = content.slice(end, end + after.length);
+    if (preBefore === before && postAfter === after) {
+      const newContent =
+        content.slice(0, start - before.length) + selected + content.slice(end + after.length);
+      setContent(newContent);
+      requestAnimationFrame(() => {
+        el.selectionStart = start - before.length;
+        el.selectionEnd = end - before.length;
+        el.focus();
+      });
+      return;
+    }
+
+    const replacement = `${before}${selected || "text"}${after}`;
+    const newContent = content.slice(0, start) + replacement + content.slice(end);
+    setContent(newContent);
+
+    requestAnimationFrame(() => {
+      if (selected) {
+        el.selectionStart = start + before.length;
+        el.selectionEnd = start + before.length + selected.length;
+      } else {
+        // Select placeholder "text"
+        el.selectionStart = start + before.length;
+        el.selectionEnd = start + before.length + 4;
+      }
+      el.focus();
+    });
+
+    toast.success(`${action.label} applied`, { duration: 1000 });
+  }, [content]);
+
+  const handleKeyDown = useCallback((e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    const mod = e.metaKey || e.ctrlKey;
+    if (!mod) return;
+
+    const key = e.key.toLowerCase();
+    const action = FORMAT_ACTIONS[key];
+    if (action) {
+      e.preventDefault();
+      applyFormat(action);
+    }
+  }, [applyFormat]);
+
   // Parse inline markdown to React elements
   const renderInlineMarkdown = (text: string): React.ReactNode[] => {
     const tokens: React.ReactNode[] = [];
@@ -44,65 +114,42 @@ export function MarkdownEditor({
       regex: RegExp;
       render: (match: RegExpMatchArray) => React.ReactNode;
     }> = [
-      // Bold + Italic
       {
         regex: /\*\*\*(.*?)\*\*\*/,
         render: (m) => (
-          <strong key={key++} className="font-semibold italic text-foreground">
-            {m[1]}
-          </strong>
+          <strong key={key++} className="font-semibold italic text-foreground">{m[1]}</strong>
         ),
       },
-      // Bold
       {
         regex: /\*\*(.*?)\*\*/,
         render: (m) => (
-          <strong key={key++} className="font-semibold text-foreground">
-            {m[1]}
-          </strong>
+          <strong key={key++} className="font-semibold text-foreground">{m[1]}</strong>
         ),
       },
-      // Italic
       {
         regex: /\*(.*?)\*/,
         render: (m) => (
-          <em key={key++} className="italic text-foreground">
-            {m[1]}
-          </em>
+          <em key={key++} className="italic text-foreground">{m[1]}</em>
         ),
       },
-      // Inline code
       {
         regex: /`(.*?)`/,
         render: (m) => (
-          <code
-            key={key++}
-            className="px-1.5 py-0.5 rounded text-sm font-mono bg-surface-sunken text-accent-foreground"
-          >
+          <code key={key++} className="px-1.5 py-0.5 rounded text-sm font-mono bg-surface-sunken text-accent-foreground">
             {m[1]}
           </code>
         ),
       },
-      // Strikethrough
       {
         regex: /~~(.*?)~~/,
         render: (m) => (
-          <s key={key++} className="line-through text-muted-foreground">
-            {m[1]}
-          </s>
+          <s key={key++} className="line-through text-muted-foreground">{m[1]}</s>
         ),
       },
-      // Links
       {
         regex: /\[([^\]]+)\]\(([^)]+)\)/,
         render: (m) => (
-          <a
-            key={key++}
-            href={m[2]}
-            className="text-primary underline underline-offset-2 hover:text-primary/80"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
+          <a key={key++} href={m[2]} className="text-primary underline underline-offset-2 hover:text-primary/80" target="_blank" rel="noopener noreferrer">
             {m[1]}
           </a>
         ),
@@ -136,14 +183,11 @@ export function MarkdownEditor({
     return tokens;
   };
 
-  // Render a single line with block-level + inline markdown
   const renderLine = (line: string, index: number): React.ReactNode => {
-    // Horizontal rule
     if (/^(-{3,}|_{3,}|\*{3,})$/.test(line.trim())) {
       return <hr key={index} className="my-4 border-border" />;
     }
 
-    // Headings
     const headingMatch = line.match(/^(#{1,6})\s+(.*)/);
     if (headingMatch) {
       const level = headingMatch[1].length;
@@ -158,27 +202,20 @@ export function MarkdownEditor({
       };
       return (
         <div key={index} className={cn(styles[level], "text-foreground")}>
-          <span className="text-muted-foreground/40 font-mono text-xs mr-2 select-none">
-            {headingMatch[1]}
-          </span>
+          <span className="text-muted-foreground/40 font-mono text-xs mr-2 select-none">{headingMatch[1]}</span>
           {renderInlineMarkdown(text)}
         </div>
       );
     }
 
-    // Blockquote
     if (line.startsWith("> ")) {
       return (
-        <div
-          key={index}
-          className="pl-4 border-l-2 border-primary/30 text-muted-foreground italic my-1"
-        >
+        <div key={index} className="pl-4 border-l-2 border-primary/30 text-muted-foreground italic my-1">
           {renderInlineMarkdown(line.slice(2))}
         </div>
       );
     }
 
-    // Unordered list
     const ulMatch = line.match(/^(\s*)([-*+])\s+(.*)/);
     if (ulMatch) {
       const indent = Math.floor(ulMatch[1].length / 2);
@@ -190,21 +227,17 @@ export function MarkdownEditor({
       );
     }
 
-    // Ordered list
     const olMatch = line.match(/^(\s*)(\d+)\.\s+(.*)/);
     if (olMatch) {
       const indent = Math.floor(olMatch[1].length / 2);
       return (
         <div key={index} className="flex items-start gap-2 my-0.5" style={{ paddingLeft: indent * 20 }}>
-          <span className="text-muted-foreground/50 select-none mt-0.5 font-mono text-sm min-w-[1.2em] text-right">
-            {olMatch[2]}.
-          </span>
+          <span className="text-muted-foreground/50 select-none mt-0.5 font-mono text-sm min-w-[1.2em] text-right">{olMatch[2]}.</span>
           <span>{renderInlineMarkdown(olMatch[3])}</span>
         </div>
       );
     }
 
-    // Checkbox (task list)
     const checkMatch = line.match(/^(\s*)- \[([ xX])\]\s+(.*)/);
     if (checkMatch) {
       const checked = checkMatch[2] !== " ";
@@ -220,12 +253,10 @@ export function MarkdownEditor({
       );
     }
 
-    // Empty line
     if (line.trim() === "") {
       return <div key={index} className="h-4" />;
     }
 
-    // Regular paragraph
     return (
       <div key={index} className="my-0.5 leading-relaxed">
         {renderInlineMarkdown(line)}
@@ -234,6 +265,8 @@ export function MarkdownEditor({
   };
 
   const lines = content.split("\n");
+  const isMac = typeof navigator !== "undefined" && /Mac/.test(navigator.userAgent);
+  const modKey = isMac ? "⌘" : "Ctrl";
 
   return (
     <div className={cn("relative w-full", className)}>
@@ -255,6 +288,7 @@ export function MarkdownEditor({
         ref={textareaRef}
         value={content}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
         placeholder={placeholder}
@@ -268,23 +302,26 @@ export function MarkdownEditor({
         aria-label="Markdown editor"
       />
 
-      {/* Format hints */}
+      {/* Format hints with shortcuts */}
       {isFocused && (
         <div className="flex flex-wrap gap-3 mt-4 pt-3 border-t border-border">
           {[
-            { label: "Bold", syntax: "**text**" },
-            { label: "Italic", syntax: "*text*" },
-            { label: "Code", syntax: "`code`" },
-            { label: "Strike", syntax: "~~text~~" },
-            { label: "Link", syntax: "[text](url)" },
+            { label: "Bold", syntax: "**text**", shortcut: `${modKey}+B` },
+            { label: "Italic", syntax: "*text*", shortcut: `${modKey}+I` },
+            { label: "Code", syntax: "`code`", shortcut: `${modKey}+E` },
+            { label: "Strike", syntax: "~~text~~", shortcut: `${modKey}+D` },
+            { label: "Link", syntax: "[text](url)", shortcut: `${modKey}+K` },
             { label: "Heading", syntax: "# ..." },
             { label: "List", syntax: "- item" },
             { label: "Quote", syntax: "> text" },
           ].map((hint) => (
-            <span key={hint.label} className="text-micro text-muted-foreground/60">
+            <span key={hint.label} className="text-micro text-muted-foreground/60 flex items-center gap-1">
               <span className="font-mono text-muted-foreground/40">{hint.syntax}</span>
-              {" "}
-              {hint.label}
+              {hint.shortcut && (
+                <kbd className="text-[10px] px-1 py-0.5 rounded bg-surface-sunken border border-border text-muted-foreground/50">
+                  {hint.shortcut}
+                </kbd>
+              )}
             </span>
           ))}
         </div>
