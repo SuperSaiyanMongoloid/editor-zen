@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { EditorToolbar } from "@/features/editor/components/editor-toolbar";
 import { EditorContainer, EditorTitleInput, EditorBody } from "@/features/editor/components/editor-container";
 import { MarkdownEditor } from "@/features/editor/components/markdown-editor";
+import { SplitEditorView } from "@/features/editor/components/split-editor-view";
+import type { EditorPaneConfig } from "@/features/editor/components/editor-pane";
 import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-header";
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
