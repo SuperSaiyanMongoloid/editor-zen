@@ -155,9 +155,20 @@
     @apply border-border;
   }
 
+  /* Smooth theme transitions */
+  :root {
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+
   body {
     @apply bg-background text-foreground font-sans antialiased;
     font-feature-settings: "cv11", "ss01";
+    transition: background-color 0.3s ease, color 0.3s ease;
+  }
+  
+  /* Apply transitions to common themed elements */
+  .transition-theme {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
   }
   
   /* Focus ring styles */
