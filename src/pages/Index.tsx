@@ -54,8 +54,47 @@ const Index = () => {
     }
   };
 
+  const handleCommandAction = (action: string, data?: unknown) => {
+    switch (action) {
+      case "create-note":
+        toast.success("Creating new note...");
+        break;
+      case "toggle-theme":
+        setIsDark(!isDark);
+        toast.success(isDark ? "Switched to light mode" : "Switched to dark mode");
+        break;
+      case "open-note":
+        const noteData = data as { noteId: string };
+        setSelectedNoteId(noteData.noteId);
+        toast.success("Opening note...");
+        break;
+      case "search-notes":
+        toast.info("Opening search...");
+        break;
+      case "view-starred":
+        toast.info("Viewing starred notes");
+        break;
+      case "view-recent":
+        toast.info("Viewing recent notes");
+        break;
+      case "open-settings":
+        toast.info("Opening settings...");
+        break;
+      default:
+        toast.info(`Action: ${action}`);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-background">
+      {/* Global Command Palette */}
+      <CommandPalette
+        isOpen={commandPalette.isOpen}
+        onClose={commandPalette.close}
+        onAction={handleCommandAction}
+        isDark={isDark}
+      />
+
       <Tabs defaultValue="desktop" className="w-full">
         {/* View Switcher */}
         <div className="sticky top-0 z-50 flex items-center justify-center gap-4 py-4 px-6 bg-surface border-b border-border">
