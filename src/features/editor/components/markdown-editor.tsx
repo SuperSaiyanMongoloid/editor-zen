@@ -6,6 +6,9 @@ interface MarkdownEditorProps {
   initialContent?: string;
   placeholder?: string;
   className?: string;
+  onChange?: (content: string) => void;
+  /** If true, always show rendered preview without editing */
+  previewOnly?: boolean;
 }
 
 type FormatAction = {
