@@ -7,6 +7,7 @@ import { EmptyEditorState } from "@/features/editor/components/empty-editor-stat
 import { NotesSidebar } from "@/features/notes/components/notes-sidebar";
 import { MobileNotesSheet } from "@/features/notes/components/mobile-notes-sheet";
 import { CommandPalette, useCommandPalette } from "@/features/command-palette/components/command-palette";
+import { DraggableNotesList } from "@/features/notes/components/draggable-notes-list";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Moon, Sun } from "lucide-react";
 import { toast } from "sonner";
