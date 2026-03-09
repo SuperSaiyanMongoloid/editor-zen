@@ -6,6 +6,9 @@ interface MarkdownEditorProps {
   initialContent?: string;
   placeholder?: string;
   className?: string;
+  onChange?: (content: string) => void;
+  /** If true, always show rendered preview without editing */
+  previewOnly?: boolean;
 }
 
 type FormatAction = {
@@ -30,6 +33,8 @@ export function MarkdownEditor({
   initialContent = "",
   placeholder = "Start writing with markdown…",
   className,
+  onChange,
+  previewOnly = false,
 }: MarkdownEditorProps) {
   const [content, setContent] = useState(initialContent);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -46,7 +51,8 @@ export function MarkdownEditor({
 
   const handleChange = useCallback((e: React.ChangeEvent<HTMLTextAreaElement>) => {
     setContent(e.target.value);
-  }, []);
+    onChange?.(e.target.value);
+  }, [onChange]);
 
   // Apply markdown formatting around selection
   const applyFormat = useCallback((action: FormatAction) => {
@@ -270,11 +276,11 @@ export function MarkdownEditor({
 
   return (
     <div className={cn("relative w-full", className)}>
-      {/* Rendered preview (visible when not focused) */}
-      {!isFocused && content.length > 0 && (
+      {/* Rendered preview (visible when not focused or previewOnly) */}
+      {(previewOnly || (!isFocused && content.length > 0)) && (
         <div
           className="text-body text-foreground cursor-text min-h-[200px]"
-          onClick={() => {
+          onClick={previewOnly ? undefined : () => {
             setIsFocused(true);
             setTimeout(() => textareaRef.current?.focus(), 0);
           }}
@@ -283,24 +289,26 @@ export function MarkdownEditor({
         </div>
       )}
 
-      {/* Textarea (visible when focused or empty) */}
-      <textarea
-        ref={textareaRef}
-        value={content}
-        onChange={handleChange}
-        onKeyDown={handleKeyDown}
-        onFocus={() => setIsFocused(true)}
-        onBlur={() => setIsFocused(false)}
-        placeholder={placeholder}
-        className={cn(
-          "w-full resize-none bg-transparent text-body text-foreground",
-          "border-none outline-none leading-relaxed font-mono",
-          "placeholder:text-muted-foreground/40",
-          (!isFocused && content.length > 0) && "absolute inset-0 opacity-0 pointer-events-none"
-        )}
-        style={{ minHeight: "200px" }}
-        aria-label="Markdown editor"
-      />
+      {/* Textarea (visible when focused or empty, hidden if previewOnly) */}
+      {!previewOnly && (
+        <textarea
+          ref={textareaRef}
+          value={content}
+          onChange={handleChange}
+          onKeyDown={handleKeyDown}
+          onFocus={() => setIsFocused(true)}
+          onBlur={() => setIsFocused(false)}
+          placeholder={placeholder}
+          className={cn(
+            "w-full resize-none bg-transparent text-body text-foreground",
+            "border-none outline-none leading-relaxed font-mono",
+            "placeholder:text-muted-foreground/40",
+            (!isFocused && content.length > 0) && "absolute inset-0 opacity-0 pointer-events-none"
+          )}
+          style={{ minHeight: "200px" }}
+          aria-label="Markdown editor"
+        />
+      )}
 
       {/* Format hints with shortcuts */}
       {isFocused && (

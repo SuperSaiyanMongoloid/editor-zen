@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { EditorToolbar } from "@/features/editor/components/editor-toolbar";
 import { EditorContainer, EditorTitleInput, EditorBody } from "@/features/editor/components/editor-container";
 import { MarkdownEditor } from "@/features/editor/components/markdown-editor";
+import { SplitEditorView } from "@/features/editor/components/split-editor-view";
+import type { EditorPaneConfig } from "@/features/editor/components/editor-pane";
 import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { MobileEditorHeader } from "@/features/editor/components/mobile-editor-header";
 import { EmptyEditorState } from "@/features/editor/components/empty-editor-state";
@@ -107,6 +109,7 @@ const Index = () => {
             <TabsTrigger value="drag-drop" className="text-sm px-4">Drag & Drop</TabsTrigger>
             <TabsTrigger value="sidebar-collapsed" className="text-sm px-4">Collapsed Sidebar</TabsTrigger>
             <TabsTrigger value="mobile" className="text-sm px-4">Mobile</TabsTrigger>
+            <TabsTrigger value="split-view" className="text-sm px-4">Split View</TabsTrigger>
             <TabsTrigger value="empty" className="text-sm px-4">Empty State</TabsTrigger>
           </TabsList>
           <div className="flex items-center gap-2 ml-4">
@@ -396,6 +399,83 @@ The shift to \`time-blocking\` has been particularly effective. I'm finding that
               onCreateNote={() => console.log("Create note")}
               selectedNoteId={selectedNoteId}
             />
+          </div>
+        </TabsContent>
+
+        {/* Split View */}
+        <TabsContent value="split-view" className="mt-0">
+          <div className="flex h-[calc(100vh-65px)]">
+            <NotesSidebar 
+              selectedNoteId={selectedNoteId}
+              onNoteSelect={setSelectedNoteId}
+              onCreateNote={() => console.log("Create note")}
+              onSearch={(q) => console.log("Search:", q)}
+            />
+            <div className="flex-1 flex flex-col min-w-0">
+              <EditorToolbar
+                noteTitle={title}
+                folderPath="Personal / Journal"
+                isSaved={isSaved}
+                isSaving={isSaving}
+                editorMode={editorMode}
+                isSidebarOpen={true}
+                isMetadataPanelOpen={false}
+                canNavigatePrev={true}
+                canNavigateNext={true}
+                onToggleEditorMode={() => setEditorMode(editorMode === "edit" ? "preview" : "edit")}
+              />
+              <SplitEditorView
+                panes={[
+                  {
+                    id: "editor",
+                    title: title,
+                    content: `The first quarter has been a period of significant learning. Looking back at my original goals, I can see both where I've made progress and where adjustments are needed.
+
+**Key observations:**
+
+- Morning routines have been consistently maintained
+- Deep work sessions averaging **3.5 hours** per day
+- Reading goal is *slightly* behind schedule
+- Exercise consistency improved ~~dramatically~~ significantly
+
+The shift to \`time-blocking\` has been particularly effective.
+
+> For Q2, I want to focus on reducing context-switching and being more intentional about saying no to commitments that don't align with my core priorities.
+
+### Next Steps
+
+1. Review [quarterly goals](https://example.com) weekly
+2. Reduce meetings to 3 per week
+3. Start a - [x] daily reflection habit`,
+                  },
+                  {
+                    id: "preview",
+                    title: title,
+                    content: `The first quarter has been a period of significant learning. Looking back at my original goals, I can see both where I've made progress and where adjustments are needed.
+
+**Key observations:**
+
+- Morning routines have been consistently maintained
+- Deep work sessions averaging **3.5 hours** per day
+- Reading goal is *slightly* behind schedule
+- Exercise consistency improved ~~dramatically~~ significantly
+
+The shift to \`time-blocking\` has been particularly effective.
+
+> For Q2, I want to focus on reducing context-switching and being more intentional about saying no to commitments that don't align with my core priorities.
+
+### Next Steps
+
+1. Review [quarterly goals](https://example.com) weekly
+2. Reduce meetings to 3 per week
+3. Start a - [x] daily reflection habit`,
+                    previewOnly: true,
+                  },
+                ]}
+                labels={["Markdown", "Preview"]}
+                className="flex-1 min-h-0"
+              />
+            </div>
           </div>
         </TabsContent>
 
