@@ -1,3 +1,5 @@
+"use client";
+
 import { useState, useEffect } from "react";
 import { EditorToolbar } from "@/features/editor/components/editor-toolbar";
 import { EditorContainer, EditorTitleInput, EditorBody } from "@/features/editor/components/editor-container";
