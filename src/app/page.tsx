@@ -281,8 +281,11 @@ export default function Home() {
 
       <SidebarInset className="flex flex-col h-dvh">
         <EditorToolbar
-          syncStatus={syncStatus}
-          onToggleMetadata={() =>
+          noteTitle={selectedNote?.title}
+          isSaved={syncStatus === "synced"}
+          isSaving={syncStatus === "syncing"}
+          isMetadataPanelOpen={isMetadataPanelOpen}
+          onToggleMetadataPanel={() =>
             setIsMetadataPanelOpen(!isMetadataPanelOpen)
           }
         />
