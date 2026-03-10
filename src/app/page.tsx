@@ -159,10 +159,11 @@ export default function Home() {
         ) : (
           <div className="flex flex-col h-full">
             <MobileEditorHeader
-              note={selectedNote}
-              syncStatus={syncStatus}
+              noteTitle={selectedNote?.title || "Untitled"}
+              isSaved={syncStatus === "synced"}
+              isSaving={syncStatus === "syncing"}
               onBack={() => setMobileView("list")}
-              onToggleMetadata={() => setIsMetadataPanelOpen(true)}
+              onOpenMetadata={() => setIsMetadataPanelOpen(true)}
             />
             {selectedNote ? (
               <EditorContainer className="flex-1">
