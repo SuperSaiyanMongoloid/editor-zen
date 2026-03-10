@@ -144,11 +144,8 @@ export default function Home() {
     return (
       <div className="flex flex-col h-dvh bg-background">
         <CommandPalette
-          open={commandPaletteOpen}
-          onOpenChange={setCommandPaletteOpen}
-          notes={notes}
-          onSelectNote={handleSelectNote}
-          onCreateNote={handleCreateNote}
+          isOpen={commandPaletteOpen}
+          onClose={() => setCommandPaletteOpen(false)}
         />
 
         {mobileView === "list" ? (
@@ -201,11 +198,8 @@ export default function Home() {
   return (
     <SidebarProvider>
       <CommandPalette
-        open={commandPaletteOpen}
-        onOpenChange={setCommandPaletteOpen}
-        notes={notes}
-        onSelectNote={handleSelectNote}
-        onCreateNote={handleCreateNote}
+        isOpen={commandPaletteOpen}
+        onClose={() => setCommandPaletteOpen(false)}
       />
 
       <NotesSidebar
