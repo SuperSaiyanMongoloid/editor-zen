@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useEffect, useCallback, useMemo } from "react";
 import { SidebarProvider, SidebarInset } from "@/components/ui/sidebar";
 import { NotesSidebar } from "@/features/notes/components/notes-sidebar";
 import { MobileNotesSheet } from "@/features/notes/components/mobile-notes-sheet";
@@ -15,84 +15,77 @@ import { EmptyEditorState } from "@/features/editor/components/empty-editor-stat
 import { MetadataPanel } from "@/features/notes/components/metadata-panel";
 import { CommandPalette } from "@/features/command-palette/components/command-palette";
 import { useIsMobile } from "@/hooks/use-mobile";
-
-const sampleFolders = [
-  { 
-    id: "1", 
-    name: "Personal", 
-    notes: [
-      { id: "1", title: "Welcome to Editor Zen", preview: "A calm, focused writing environment...", modifiedAt: "Today", isPinned: true },
-      { id: "2", title: "Quick Notes", preview: "Random thoughts and ideas...", modifiedAt: "Yesterday" },
-    ]
-  },
-  { 
-    id: "2", 
-    name: "Work", 
-    notes: [],
-    subfolders: [
-      {
-        id: "3",
-        name: "Projects",
-        notes: [
-          { id: "3", title: "Project Notes", preview: "Key milestones and deliverables...", modifiedAt: "2 days ago" },
-        ]
-      }
-    ]
-  },
-];
-
-const sampleNotes = [
-  {
-    id: "1",
-    title: "Welcome to Editor Zen",
-    content: "# Welcome to Editor Zen\n\nA calm, focused writing environment...",
-    folderId: "1",
-    isPinned: true,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "2",
-    title: "Getting Started",
-    content:
-      "# Getting Started\n\nUse keyboard shortcuts for quick navigation...",
-    folderId: "1",
-    isPinned: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-  {
-    id: "3",
-    title: "Project Notes",
-    content: "# Project Notes\n\nKey milestones and deliverables...",
-    folderId: "3",
-    isPinned: false,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  },
-];
+import {
+  useAppState,
+  useAppActions,
+  useSelectedNote,
+  useNotes,
+  useFolders,
+  useUIState,
+} from "@/contexts/app-context";
 
 export default function Home() {
   const isMobile = useIsMobile();
 
-  const [selectedNoteId, setSelectedNoteId] = useState<string | null>("1");
-  const [mobileView, setMobileView] = useState<"list" | "editor">("list");
+  // App state from context
+  const { notes, searchQuery } = useNotes();
+  const { folders, folderTree, expandedFolders, toggle: toggleFolder } = useFolders();
+  const { note: selectedNote, noteId: selectedNoteId, select: selectNote } = useSelectedNote();
+  const { createNote, refreshNotes, search: setSearchQuery } = useNotes();
+  const { updateNote, toggleNotePin, deleteNote } = useAppActions();
+  const {
+    syncStatus,
+    isMetadataPanelOpen,
+    isCommandPaletteOpen,
+    mobileView,
+    setMobileView,
+    setMetadataPanelOpen,
+    setCommandPaletteOpen,
+  } = useUIState();
 
-  const [isMetadataPanelOpen, setIsMetadataPanelOpen] = useState(false);
-  const [commandPaletteOpen, setCommandPaletteOpen] = useState(false);
+  // Transform folders for sidebar format
+  const sidebarFolders = useMemo(() => {
+    // Get notes grouped by folder
+    const notesByFolder = new Map<string | null, typeof notes>();
+    notes.forEach(note => {
+      const folderId = note.folderId;
+      if (!notesByFolder.has(folderId)) {
+        notesByFolder.set(folderId, []);
+      }
+      notesByFolder.get(folderId)!.push(note);
+    });
 
-  const [notes, setNotes] = useState(sampleNotes);
+    // Build folder tree with notes
+    const buildFolderWithNotes = (folder: typeof folders[0]): {
+      id: string;
+      name: string;
+      notes: { id: string; title: string; preview: string; modifiedAt: string; isPinned?: boolean }[];
+      subfolders?: ReturnType<typeof buildFolderWithNotes>[];
+      isExpanded?: boolean;
+    } => {
+      const folderNotes = notesByFolder.get(folder.id) || [];
+      const children = folders.filter(f => f.parentId === folder.id);
+      
+      return {
+        id: folder.id,
+        name: folder.name,
+        notes: folderNotes.map(n => ({
+          id: n.id,
+          title: n.title,
+          preview: n.preview,
+          modifiedAt: formatRelativeTime(n.updatedAt),
+          isPinned: n.isPinned,
+        })),
+        subfolders: children.length > 0 ? children.map(buildFolderWithNotes) : undefined,
+        isExpanded: expandedFolders.has(folder.id as any),
+      };
+    };
 
-  const [syncStatus, setSyncStatus] = useState<
-    "synced" | "syncing" | "offline"
-  >("synced");
+    const rootFolders = folders.filter(f => f.parentId === null);
+    return rootFolders.map(buildFolderWithNotes);
+  }, [folders, notes, expandedFolders]);
 
-  const selectedNote = notes.find((n) => n.id === selectedNoteId) || null;
-
-  /*
-   Keyboard Shortcuts
-  */
-
+  // Keyboard Shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if ((e.metaKey || e.ctrlKey) && e.key === "k") {
@@ -108,108 +101,48 @@ export default function Home() {
 
     window.addEventListener("keydown", handleKeyDown);
     return () => window.removeEventListener("keydown", handleKeyDown);
-  }, []);
+  }, [setCommandPaletteOpen]);
 
-  /*
-   Note Actions
-  */
-
+  // Note Actions
   const handleSelectNote = useCallback(
-    (noteId: string) => {
-      setSelectedNoteId(noteId);
-
+    async (noteId: string) => {
+      await selectNote(noteId);
       if (isMobile) {
         setMobileView("editor");
       }
     },
-    [isMobile]
+    [isMobile, selectNote, setMobileView]
   );
 
-  const handleCreateNote = useCallback(() => {
-    const newNote = {
-      id: `${Date.now()}`,
-      title: "Untitled",
-      content: "",
-      folderId: null,
-      isPinned: false,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    setNotes((prev) => [newNote, ...prev]);
-    setSelectedNoteId(newNote.id);
-
+  const handleCreateNote = useCallback(async () => {
+    const note = await createNote();
     if (isMobile) {
       setMobileView("editor");
     }
-  }, [isMobile]);
+  }, [isMobile, createNote, setMobileView]);
 
   const handleTitleChange = useCallback(
     (title: string) => {
       if (!selectedNoteId) return;
-
-      setNotes((prev) =>
-        prev.map((n) =>
-          n.id === selectedNoteId
-            ? { ...n, title, updatedAt: new Date() }
-            : n
-        )
-      );
-
-      setSyncStatus("syncing");
-
-      setTimeout(() => setSyncStatus("synced"), 1000);
+      updateNote(selectedNoteId, { title });
     },
-    [selectedNoteId]
+    [selectedNoteId, updateNote]
   );
 
   const handleContentChange = useCallback(
     (content: string) => {
       if (!selectedNoteId) return;
-
-      setNotes((prev) =>
-        prev.map((n) =>
-          n.id === selectedNoteId
-            ? { ...n, content, updatedAt: new Date() }
-            : n
-        )
-      );
-
-      setSyncStatus("syncing");
-
-      setTimeout(() => setSyncStatus("synced"), 1000);
+      updateNote(selectedNoteId, { content });
     },
-    [selectedNoteId]
+    [selectedNoteId, updateNote]
   );
 
-  const handleTogglePin = useCallback((noteId: string) => {
-    setNotes((prev) =>
-      prev.map((n) =>
-        n.id === noteId ? { ...n, isPinned: !n.isPinned } : n
-      )
-    );
-  }, []);
-
-  const handleDeleteNote = useCallback(
-    (noteId: string) => {
-      setNotes((prev) => prev.filter((n) => n.id !== noteId));
-
-      if (selectedNoteId === noteId) {
-        setSelectedNoteId(null);
-      }
-    },
-    [selectedNoteId]
-  );
-
-  /*
-   Mobile Layout
-  */
-
+  // Mobile Layout
   if (isMobile) {
     return (
       <div className="flex flex-col h-dvh bg-background">
         <CommandPalette
-          isOpen={commandPaletteOpen}
+          isOpen={isCommandPaletteOpen}
           onClose={() => setCommandPaletteOpen(false)}
         />
 
@@ -217,7 +150,7 @@ export default function Home() {
           <MobileNotesSheet
             isOpen={true}
             onClose={() => setMobileView("editor")}
-            selectedNoteId={selectedNoteId}
+            selectedNoteId={selectedNoteId || undefined}
             onNoteSelect={handleSelectNote}
             onCreateNote={handleCreateNote}
           />
@@ -228,7 +161,7 @@ export default function Home() {
               isSaved={syncStatus === "synced"}
               isSaving={syncStatus === "syncing"}
               onBack={() => setMobileView("list")}
-              onOpenMetadata={() => setIsMetadataPanelOpen(true)}
+              onOpenMetadata={() => setMetadataPanelOpen(true)}
             />
 
             {selectedNote ? (
@@ -252,31 +185,32 @@ export default function Home() {
         {selectedNote && (
           <MetadataPanel
             isOpen={isMetadataPanelOpen}
-            onClose={() => setIsMetadataPanelOpen(false)}
-            createdAt={selectedNote.createdAt.toLocaleDateString()}
-            modifiedAt={selectedNote.updatedAt.toLocaleDateString()}
+            onClose={() => setMetadataPanelOpen(false)}
+            createdAt={formatDate(selectedNote.createdAt)}
+            modifiedAt={formatDate(selectedNote.updatedAt)}
+            wordCount={selectedNote.wordCount}
+            characterCount={selectedNote.characterCount}
+            readingTime={`${selectedNote.readingTimeMinutes} min read`}
           />
         )}
       </div>
     );
   }
 
-  /*
-   Desktop Layout
-  */
-
+  // Desktop Layout
   return (
     <SidebarProvider>
       <CommandPalette
-        isOpen={commandPaletteOpen}
+        isOpen={isCommandPaletteOpen}
         onClose={() => setCommandPaletteOpen(false)}
       />
 
       <NotesSidebar
-        folders={sampleFolders}
-        selectedNoteId={selectedNoteId}
+        folders={sidebarFolders}
+        selectedNoteId={selectedNoteId || undefined}
         onNoteSelect={handleSelectNote}
         onCreateNote={handleCreateNote}
+        onSearch={setSearchQuery}
       />
 
       <SidebarInset className="flex flex-col h-dvh">
@@ -286,7 +220,7 @@ export default function Home() {
           isSaving={syncStatus === "syncing"}
           isMetadataPanelOpen={isMetadataPanelOpen}
           onToggleMetadataPanel={() =>
-            setIsMetadataPanelOpen(!isMetadataPanelOpen)
+            setMetadataPanelOpen(!isMetadataPanelOpen)
           }
         />
 
@@ -311,13 +245,43 @@ export default function Home() {
 
           {selectedNote && isMetadataPanelOpen && (
             <MetadataPanel
-              note={selectedNote}
               isOpen={isMetadataPanelOpen}
-              onClose={() => setIsMetadataPanelOpen(false)}
+              onClose={() => setMetadataPanelOpen(false)}
+              createdAt={formatDate(selectedNote.createdAt)}
+              modifiedAt={formatDate(selectedNote.updatedAt)}
+              wordCount={selectedNote.wordCount}
+              characterCount={selectedNote.characterCount}
+              readingTime={`${selectedNote.readingTimeMinutes} min read`}
             />
           )}
         </div>
       </SidebarInset>
     </SidebarProvider>
   );
+}
+
+// Helper functions
+function formatRelativeTime(timestamp: string): string {
+  const date = new Date(timestamp);
+  const now = new Date();
+  const diffMs = now.getTime() - date.getTime();
+  const diffMins = Math.floor(diffMs / 60000);
+  const diffHours = Math.floor(diffMs / 3600000);
+  const diffDays = Math.floor(diffMs / 86400000);
+
+  if (diffMins < 1) return "Just now";
+  if (diffMins < 60) return `${diffMins}m ago`;
+  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffDays === 1) return "Yesterday";
+  if (diffDays < 7) return `${diffDays}d ago`;
+  
+  return date.toLocaleDateString();
+}
+
+function formatDate(timestamp: string): string {
+  return new Date(timestamp).toLocaleDateString("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  });
 }
