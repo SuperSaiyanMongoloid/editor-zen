@@ -555,7 +555,7 @@ function FolderTree({
   setFocusedIndex,
 }: FolderTreeProps) {
   const isExpanded = expandedFolders.has(folder.id);
-  const hasChildren = (folder.notes.length > 0) || (folder.subfolders && folder.subfolders.length > 0);
+  const hasChildren = (folder.notes?.length > 0) || (folder.subfolders?.length > 0);
   const folderNavIndex = getNavIndex('folder', folder.id);
   const isFolderFocused = focusedIndex === folderNavIndex;
 
@@ -590,7 +590,7 @@ function FolderTree({
           "text-xs text-muted-foreground transition-all duration-150",
           "opacity-0 group-hover:opacity-100 translate-x-1 group-hover:translate-x-0"
         )}>
-          {folder.notes.length + (folder.subfolders?.reduce((acc, sf) => acc + sf.notes.length, 0) || 0)}
+          {(folder.notes?.length || 0) + (folder.subfolders?.reduce((acc, sf) => acc + (sf.notes?.length || 0), 0) || 0)}
         </span>
       </button>
 
@@ -598,7 +598,7 @@ function FolderTree({
       {isExpanded && (
         <div className="animate-fade-in" role="group">
           {/* Notes in this folder */}
-          {folder.notes.map(note => {
+          {(folder.notes || []).map(note => {
             const noteNavIndex = getNavIndex('note', note.id);
             return (
               <NoteItem
