@@ -150,13 +150,11 @@ export default function Home() {
 
         {mobileView === "list" ? (
           <MobileNotesSheet
-            notes={notes}
-            folders={sampleFolders}
+            isOpen={true}
+            onClose={() => setMobileView("editor")}
             selectedNoteId={selectedNoteId}
-            onSelectNote={handleSelectNote}
+            onNoteSelect={handleSelectNote}
             onCreateNote={handleCreateNote}
-            onTogglePin={handleTogglePin}
-            onDeleteNote={handleDeleteNote}
           />
         ) : (
           <div className="flex flex-col h-full">
