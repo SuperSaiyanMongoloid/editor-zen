@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  // Enables Partial Pre-Rendering (static shell + streamed dynamic content)
-  // and the "use cache" directive for component/function-level caching
-  cacheComponents: true,
+  experimental: {
+    // Partial Pre-Rendering: serve a static shell instantly, stream dynamic content
+    ppr: "incremental",
+  },
   // Compiler-level optimisations
   compiler: {
     // Remove console.* calls in production builds
