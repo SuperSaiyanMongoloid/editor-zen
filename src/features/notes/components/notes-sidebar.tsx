@@ -1,3 +1,5 @@
+"use client";
+
 import React, { useState, useRef, useCallback, useEffect, useMemo } from "react";
 import { 
   Search, 
@@ -498,12 +500,11 @@ const QuickAccessItem = React.forwardRef<HTMLButtonElement, QuickAccessItemProps
       <button
         ref={ref}
         className={cn(
-          "w-full flex items-center justify-between px-2 py-1.5 rounded-md text-sm group",
+          "w-full flex items-center justify-between px-2 py-1.5 text-sm group",
           "text-sidebar-foreground/80",
-          "transition-all duration-150 ease-out",
-          "hover:text-sidebar-foreground hover:bg-sidebar-accent hover:translate-x-0.5 hover:shadow-xs",
-          "active:translate-x-0 active:shadow-none active:scale-[0.99]",
-          isActive && "bg-sidebar-accent text-sidebar-accent-foreground shadow-xs translate-x-0",
+          "transition-colors duration-150 ease-out",
+          "hover:text-sidebar-foreground hover:bg-sidebar-accent",
+          isActive && "bg-sidebar-accent text-sidebar-accent-foreground",
           isFocused && "ring-2 ring-ring ring-offset-1 ring-offset-sidebar bg-sidebar-accent/50"
         )}
         onClick={onClick}
@@ -511,10 +512,7 @@ const QuickAccessItem = React.forwardRef<HTMLButtonElement, QuickAccessItemProps
         role="treeitem"
       >
         <span className="flex items-center gap-2">
-          <span className={cn(
-            "text-muted-foreground transition-transform duration-150",
-            "group-hover:scale-110"
-          )}>{icon}</span>
+          <span className="text-muted-foreground">{icon}</span>
           <span>{name}</span>
         </span>
         {count !== undefined && (
@@ -567,11 +565,10 @@ function FolderTree({
       <button
         ref={(el) => registerRef(folderNavIndex, el)}
         className={cn(
-          "w-full flex items-center gap-1 px-2 py-1.5 rounded-md text-sm group",
+          "w-full flex items-center gap-1 px-2 py-1.5 text-sm group",
           "text-sidebar-foreground",
-          "transition-all duration-150 ease-out",
-          "hover:bg-sidebar-accent hover:shadow-xs",
-          "active:scale-[0.99] active:shadow-none",
+          "transition-colors duration-150 ease-out",
+          "hover:bg-sidebar-accent",
           isFolderFocused && "ring-2 ring-ring ring-offset-1 ring-offset-sidebar bg-sidebar-accent/50"
         )}
         style={{ paddingLeft: `${depth * 12 + 8}px` }}
@@ -587,10 +584,7 @@ function FolderTree({
         )}>
           {hasChildren && <ChevronRight className="w-3.5 h-3.5" />}
         </span>
-        <Folder className={cn(
-          "w-4 h-4 text-muted-foreground transition-transform duration-150",
-          "group-hover:scale-110"
-        )} />
+        <Folder className="w-4 h-4 text-muted-foreground" />
         <span className="flex-1 text-left truncate">{folder.name}</span>
         <span className={cn(
           "text-xs text-muted-foreground transition-all duration-150",
@@ -655,12 +649,11 @@ const NoteItem = React.forwardRef<HTMLButtonElement, NoteItemProps>(
       <button
         ref={ref}
         className={cn(
-          "w-full flex items-start gap-2 px-2 py-2 rounded-md text-left group",
-          "transition-all duration-150 ease-out",
+          "w-full flex items-start gap-2 px-2 py-2 text-left group",
+          "transition-colors duration-150 ease-out",
           isSelected 
-            ? "bg-sidebar-accent text-sidebar-accent-foreground shadow-sm ring-1 ring-accent/10" 
-            : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground hover:shadow-xs hover:translate-x-0.5",
-          "active:scale-[0.99] active:shadow-none active:translate-x-0",
+            ? "bg-sidebar-accent text-sidebar-accent-foreground" 
+            : "text-sidebar-foreground/80 hover:bg-sidebar-accent/50 hover:text-sidebar-foreground",
           isFocused && "ring-2 ring-ring ring-offset-1 ring-offset-sidebar"
         )}
         style={{ paddingLeft: `${depth * 12 + 24}px` }}
@@ -669,16 +662,13 @@ const NoteItem = React.forwardRef<HTMLButtonElement, NoteItemProps>(
         role="treeitem"
       >
         <FileText className={cn(
-          "w-4 h-4 mt-0.5 flex-shrink-0 transition-transform duration-150",
-          isSelected ? "text-sidebar-accent-foreground scale-110" : "text-muted-foreground group-hover:scale-110"
+          "w-4 h-4 mt-0.5 flex-shrink-0",
+          isSelected ? "text-sidebar-accent-foreground" : "text-muted-foreground"
         )} />
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-1.5">
             {note.isPinned && (
-              <Star className={cn(
-                "w-3 h-3 text-accent fill-accent flex-shrink-0",
-                "transition-transform duration-150 group-hover:scale-110"
-              )} />
+              <Star className="w-3 h-3 text-accent fill-accent flex-shrink-0" />
             )}
             <span className={cn(
               "text-sm truncate",
@@ -698,10 +688,9 @@ const NoteItem = React.forwardRef<HTMLButtonElement, NoteItemProps>(
           variant="ghost"
           size="icon"
           className={cn(
-            "w-6 h-6 flex-shrink-0 transition-all duration-150",
+            "w-6 h-6 flex-shrink-0 transition-opacity duration-150",
             "opacity-0 group-hover:opacity-100",
-            "text-muted-foreground hover:text-foreground",
-            "hover:scale-110 active:scale-95"
+            "text-muted-foreground hover:text-foreground"
           )}
           onClick={(e) => {
             e.stopPropagation();
