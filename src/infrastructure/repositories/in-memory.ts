@@ -259,7 +259,7 @@ export class InMemoryNoteRepository implements INoteRepository {
 
   async getCount(filter?: NoteFilterOptions): Promise<Result<number>> {
     const result = await this.findMany(filter);
-    return result.success ? success(result.data.total) : result;
+    return result.success ? success(result.data.total) : failure(result.error);
   }
 
   // Helper method to get all notes (for debugging/export)
