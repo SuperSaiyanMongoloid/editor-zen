@@ -1,5 +1,3 @@
-"use client";
-
 import { ChevronLeft, MoreHorizontal, PanelRight, Cloud, CloudOff, Check } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";

@@ -1,5 +1,3 @@
-"use client";
-
 import { FileText, Plus, Search, Command } from "lucide-react";
 import { cn } from "@/lib/utils";
 

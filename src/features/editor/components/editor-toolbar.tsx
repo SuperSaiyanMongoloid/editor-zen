@@ -1,5 +1,3 @@
-"use client";
-
 import { ChevronLeft, ChevronRight, PanelLeft, PanelRight, MoreHorizontal, Cloud, CloudOff, Edit3, Eye } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";

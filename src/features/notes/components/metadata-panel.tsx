@@ -1,5 +1,3 @@
-"use client";
-
 import { X, Calendar, Clock, FileText, Hash, List, FolderOpen } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";

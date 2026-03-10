@@ -8,6 +8,8 @@
   Inspired by iA Writer, Bear, and Obsidian
 */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
 @layer base {
   :root {
     /* Core palette - warm paper tones */
@@ -80,7 +82,7 @@
     --space-12: 3rem;
     --space-16: 4rem;
     
-    /* Typography (populated by next/font at runtime) */
+    /* Typography */
     --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
     --font-mono: 'JetBrains Mono', ui-monospace, monospace;
     
