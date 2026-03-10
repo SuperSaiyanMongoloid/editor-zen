@@ -232,9 +232,10 @@ export default function Home() {
 
         {selectedNote && (
           <MetadataPanel
-            note={selectedNote}
             isOpen={isMetadataPanelOpen}
             onClose={() => setIsMetadataPanelOpen(false)}
+            createdAt={selectedNote.createdAt.toLocaleDateString()}
+            modifiedAt={selectedNote.updatedAt.toLocaleDateString()}
           />
         )}
       </div>
