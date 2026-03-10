@@ -555,7 +555,7 @@ function FolderTree({
   setFocusedIndex,
 }: FolderTreeProps) {
   const isExpanded = expandedFolders.has(folder.id);
-  const hasChildren = (folder.notes.length > 0) || (folder.subfolders && folder.subfolders.length > 0);
+  const hasChildren = (folder.notes?.length > 0) || (folder.subfolders?.length > 0);
   const folderNavIndex = getNavIndex('folder', folder.id);
   const isFolderFocused = focusedIndex === folderNavIndex;
 
