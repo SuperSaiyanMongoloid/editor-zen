@@ -17,9 +17,28 @@ import { CommandPalette } from "@/features/command-palette/components/command-pa
 import { useIsMobile } from "@/hooks/use-mobile";
 
 const sampleFolders = [
-  { id: "1", name: "Personal", parentId: null },
-  { id: "2", name: "Work", parentId: null },
-  { id: "3", name: "Projects", parentId: "2" },
+  { 
+    id: "1", 
+    name: "Personal", 
+    notes: [
+      { id: "1", title: "Welcome to Editor Zen", preview: "A calm, focused writing environment...", modifiedAt: "Today", isPinned: true },
+      { id: "2", title: "Quick Notes", preview: "Random thoughts and ideas...", modifiedAt: "Yesterday" },
+    ]
+  },
+  { 
+    id: "2", 
+    name: "Work", 
+    notes: [],
+    subfolders: [
+      {
+        id: "3",
+        name: "Projects",
+        notes: [
+          { id: "3", title: "Project Notes", preview: "Key milestones and deliverables...", modifiedAt: "2 days ago" },
+        ]
+      }
+    ]
+  },
 ];
 
 const sampleNotes = [
@@ -254,13 +273,10 @@ export default function Home() {
       />
 
       <NotesSidebar
-        notes={notes}
         folders={sampleFolders}
         selectedNoteId={selectedNoteId}
-        onSelectNote={handleSelectNote}
+        onNoteSelect={handleSelectNote}
         onCreateNote={handleCreateNote}
-        onTogglePin={handleTogglePin}
-        onDeleteNote={handleDeleteNote}
       />
 
       <SidebarInset className="flex flex-col h-dvh">
